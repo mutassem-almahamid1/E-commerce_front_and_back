@@ -52,26 +52,36 @@ public class SecurityConfig {
                 )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // السماح للجميع بتصفح المنتجات، التصنيفات، البراند، الكاتالوج
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/brands/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
+                        // السماح للجميع بالوصول للروابط العامة الأخرى
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/book/top").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/book").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/book/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/book/category").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/book/search/page").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/book/search").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/book/base").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/category/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/category").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/category/page").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/user/{userId}/want-to-read").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/user/{userId}/finished").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/user/{userId}/currently-reading").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/user/{id}/following").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/user/{id}/followers").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/review/user/{userId}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/review/paged/user/{userId}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/review/book/{bookId}").permitAll()
+                        // السماح فقط للمستخدم أو الأدمن بالتعليق أو الشراء أو إضافة للسلة أو الطلبات
+                        .requestMatchers(HttpMethod.POST, "/api/v1/reviews/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/orders/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/carts/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/carts/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/carts/**").hasAnyRole("USER", "ADMIN")
+                        // السماح فقط للأدمن بإضافة/تعديل/حذف المنتجات، التصنيفات، البراند
+                        .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/**").hasRole("ADMIN")
+
+                        // أي طلب آخر يتطلب مصادقة
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->
@@ -92,6 +102,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://localhost:8080",
                 "https://orange-wave-067979203.1.azurestaticapps.net"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

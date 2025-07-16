@@ -1,4 +1,4 @@
-package com.mutassemalmahamid.ecommerce.model.dto.request;
+package com.mutassemalmahamid.ecommerce.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

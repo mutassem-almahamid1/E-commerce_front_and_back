@@ -1,5 +1,6 @@
 package com.mutassemalmahamid.ecommerce.model.document;
 
+import com.mutassemalmahamid.ecommerce.model.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class Brand {
 
     private String websiteUrl;
 
-    private Boolean isActive;
+    private Status status;
 
     private LocalDateTime createdAt;
 

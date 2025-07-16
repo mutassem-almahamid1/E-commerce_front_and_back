@@ -1,4 +1,6 @@
 package com.mutassemalmahamid.ecommerce.model.enums;
 
-public class ItemStatus {
+public enum ItemStatus {
+    IN_STOCK,
+    OUT_OF_STOCK,
 }

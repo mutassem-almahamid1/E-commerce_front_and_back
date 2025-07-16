@@ -1,9 +1,13 @@
 package com.mutassemalmahamid.ecommerce.services.impl;
 
+import com.mutassemalmahamid.ecommerce.handelException.exception.BadCredentialsException;
+import com.mutassemalmahamid.ecommerce.handelException.exception.ConflictException;
+import com.mutassemalmahamid.ecommerce.handelException.exception.NotFoundException;
 import com.mutassemalmahamid.ecommerce.mapper.UserMapper;
 import com.mutassemalmahamid.ecommerce.mapper.helper.AssistantHelper;
 import com.mutassemalmahamid.ecommerce.model.common.MessageResponse;
 import com.mutassemalmahamid.ecommerce.model.document.User;
+import com.mutassemalmahamid.ecommerce.model.dto.request.UserLoginReq;
 import com.mutassemalmahamid.ecommerce.model.dto.request.UserSignUpRequest;
 import com.mutassemalmahamid.ecommerce.model.dto.response.UserResponse;
 import com.mutassemalmahamid.ecommerce.model.enums.Status;
@@ -18,49 +22,32 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-    @Autowired
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
 
-
-    @Override
-    public UserResponse signUp(UserSignUpRequest request) {
-        User toDocument = UserMapper.toEntity(request);
-
-        if (userRepo.getByUsernameIfPresent(toDocument.getUsername()).isPresent()) {
-          //  throw new ConflictException("Username is already taken");
-        }
-
-
-        if (userRepo.getByEmailIfPresent(toDocument.getEmail()).isPresent()) {
-            //throw new ConflictException("Email is already in use");
-        }
-
-        //toDocument.setPassword(passwordEncoder.encode(toDocument.getPassword()));
-        User user = this.userRepo.save(toDocument);
-        return UserMapper.toResponse(user);
+    public UserServiceImpl(UserRepo userRepo, MongoTemplate mongoTemplate, ReviewService reviewService) {
+        this.userRepo = userRepo;
+        this.mongoTemplate = mongoTemplate;
+        this.reviewService = reviewService;
     }
+
+
 
     @Override
     public UserResponse getById(String id) {
-        Optional<User> user = userRepo.getByIdIfPresent(id);
+        User user = userRepo.getById(id);
         return UserMapper.toResponse(user);
     }
 
     @Override
     public MessageResponse updateStatus(String id, Status status) {
-        User user = userRepo.getByIdAndStatusNotDeleted(id);
+        User user = userRepo.getByIdAndStatusNot(id, Status.DELETED);
         user.setStatus(status);
         user.setUpdatedAt(LocalDateTime.now());
         this.userRepo.save(user);
@@ -70,17 +57,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getByUsername(String username) {
         User user = userRepo.getByUsername(username);
-        return UserMapper.toResponse(Optional.ofNullable(user));
+        return UserMapper.toResponse(user);
     }
 
-    @Override
-    public Page<UserResponse> getAllByName(String name) {
-        Page<User> users = this.userRepo.getByNameContainingIgnoreCase(name);
-        return users
-                .stream()
-                .map(UserMapper::toResponse)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public Page<UserResponse> getByNamePage(String name, Pageable pageable) {
@@ -115,7 +94,7 @@ public class UserServiceImpl implements UserService {
         user.setStatus(Status.DELETED);
         userRepo.save(user);
         // delete all review
-        this.reviewService.softDeleteByUserId(user.getId());
+        this.reviewService.softDeleteById(user.getId());
         return new MessageResponse("User deleted successfully.");
     }
 
@@ -126,4 +105,4 @@ public class UserServiceImpl implements UserService {
         userRepo.delete(user);
         return new MessageResponse("User deleted successfully.");
     }
-    }
+}

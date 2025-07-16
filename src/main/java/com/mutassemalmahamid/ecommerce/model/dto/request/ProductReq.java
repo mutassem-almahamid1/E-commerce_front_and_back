@@ -1,14 +1,14 @@
 package com.mutassemalmahamid.ecommerce.model.dto.request;
 
-
-import com.mutassemalmahamid.ecommerce.model.enums.Status;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,20 +17,29 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductReq {
-    @NotBlank(message = "Product ")
+    @NotBlank(message = "Product name is required")
     private String name;
-    @NotBlank
+
+    @NotBlank(message = "Description is required")
     private String description;
-    @NotBlank
+
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be positive")
     private double price;
-    @NotBlank
+
+    @NotBlank(message = "Brand is required")
     private String brand;
-    @NotBlank
+
+    @NotBlank(message = "Category ID is required")
     private String categoryId;
-    @NotBlank
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 0, message = "Quantity must be positive")
     private int quantity;
-    @NotBlank
+
+    @NotEmpty(message = "At least one image is required")
     private List<String> images;
-    @NotBlank
+
+    @NotEmpty(message = "Technical specifications are required")
     private Map<String, String> technicalSpecs;
 }

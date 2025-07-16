@@ -30,6 +30,8 @@ public class ProductResponse {
     private double avgRating;
     private int reviewCount;
 
-    private Status state;
+    private Status status;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

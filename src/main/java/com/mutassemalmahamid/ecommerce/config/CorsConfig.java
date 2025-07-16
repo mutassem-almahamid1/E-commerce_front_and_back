@@ -1,6 +1,5 @@
 package com.mutassemalmahamid.ecommerce.config;
 
-package com.project.readers_community.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
