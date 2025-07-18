@@ -9,7 +9,6 @@ import com.mutassemalmahamid.ecommerce.model.enums.Roles;
 import com.mutassemalmahamid.ecommerce.model.enums.Status;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class UserMapper {
 
@@ -29,6 +28,7 @@ public class UserMapper {
     public static User toEntity(UserLoginReq userLoginReq) {
         return User.builder()
                 .email(AssistantHelper.trimString(userLoginReq.getEmail()))
+                .password(userLoginReq.getPassword())
                 .build();
     }
 

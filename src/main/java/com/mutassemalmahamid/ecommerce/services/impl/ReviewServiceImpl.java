@@ -8,6 +8,7 @@ import com.mutassemalmahamid.ecommerce.model.dto.response.ReviewResponse;
 import com.mutassemalmahamid.ecommerce.model.enums.Status;
 import com.mutassemalmahamid.ecommerce.model.common.MessageResponse;
 import com.mutassemalmahamid.ecommerce.repository.ReviewRepo;
+import com.mutassemalmahamid.ecommerce.repository.UserRepo;
 import com.mutassemalmahamid.ecommerce.services.ReviewService;
 import com.mutassemalmahamid.ecommerce.mapper.helper.AssistantHelper;
 import org.springframework.data.domain.Page;
@@ -23,36 +24,43 @@ import java.util.stream.Collectors;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepo reviewRepo;
+    private final UserRepo userRepo;
 
-    public ReviewServiceImpl(ReviewRepo reviewRepo) {
+    public ReviewServiceImpl(ReviewRepo reviewRepo, UserRepo userRepo) {
         this.reviewRepo = reviewRepo;
+        this.userRepo = userRepo;
     }
 
     @Override
     public ReviewResponse create(ReviewReq request, String userId) {
         Review review = ReviewMapper.toEntity(request, userId);
         Review saved = reviewRepo.save(review);
-        return ReviewMapper.toResponse(saved);
+        var user = userRepo.getById(saved.getUserId());
+        return ReviewMapper.toResponse(saved, user);
     }
 
     @Override
     public ReviewResponse getById(String id) {
-        Review review = reviewRepo.getByIdIfPresent(id)
-                .orElseThrow(() -> new NotFoundException("Review not found"));
-        return ReviewMapper.toResponse(review);
+        Review review = reviewRepo.getById(id);
+        var user = userRepo.getById(review.getUserId());
+        return ReviewMapper.toResponse(review, user);
     }
 
     @Override
     public List<ReviewResponse> getAllByProductId(String productId) {
         return reviewRepo.getAllByProductId(productId).stream()
-                .map(ReviewMapper::toResponse)
+                .map(review -> {
+                    var user = userRepo.getById(review.getUserId());
+                    return ReviewMapper.toResponse(review, user);
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<ReviewResponse> getAllByUserId(String userId) {
+        var user = userRepo.getById(userId);
         return reviewRepo.getAllByUserId(userId).stream()
-                .map(ReviewMapper::toResponse)
+                .map(review -> ReviewMapper.toResponse(review, user))
                 .collect(Collectors.toList());
     }
 
@@ -63,7 +71,8 @@ public class ReviewServiceImpl implements ReviewService {
         ReviewMapper.updateEntity(review, request);
         review.setUpdatedAt(LocalDateTime.now());
         Review updated = reviewRepo.save(review);
-        return ReviewMapper.toResponse(updated);
+        var user = userRepo.getById(updated.getUserId());
+        return ReviewMapper.toResponse(updated, user);
     }
 
     @Override
@@ -85,7 +94,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<ReviewResponse> getAll(Pageable pageable) {
         List<ReviewResponse> responses = reviewRepo.getAll().stream()
-                .map(ReviewMapper::toResponse)
+                .map(review -> {
+                    var user = userRepo.getById(review.getUserId());
+                    return ReviewMapper.toResponse(review, user);
+                })
                 .collect(Collectors.toList());
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), responses.size());

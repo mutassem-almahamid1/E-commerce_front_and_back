@@ -63,12 +63,14 @@ public class ProductRepoImp implements ProductRepo {
 
     @Override
     public List<Product> getNewestProducts() {
-        return productMongoRepo.findTop10ByOrderByCreatedAtDesc();
+        // جلب أحدث 10 منتجات حسب تاريخ الإنشاء
+        return productMongoRepo.findTop10ByStatusOrderByCreatedAtDesc(Status.ACTIVE);
     }
 
     @Override
     public List<Product> getTopRatedProducts() {
-        return productMongoRepo.findTop10ByOrderByAvgRatingDesc();
+        // جلب أعلى 10 منتجات حسب التقييم
+        return productMongoRepo.findTop10ByStatusOrderByAvgRatingDesc(Status.ACTIVE);
     }
 
     @Override

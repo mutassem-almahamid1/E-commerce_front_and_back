@@ -100,14 +100,39 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:8080",
-                "https://orange-wave-067979203.1.azurestaticapps.net"
+
+        // Allow specific origins including all common development ports
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "https://*.vercel.app",
+                "https://*.netlify.app",
+                "https://*.azurestaticapps.net"
         ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // Allow all necessary HTTP methods
+        configuration.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
+        ));
+
+        // Allow all headers including Authorization and Cookie headers
         configuration.setAllowedHeaders(List.of("*"));
+
+        // Allow credentials (CRITICAL for authentication cookies)
         configuration.setAllowCredentials(true);
+
+        // Expose headers that frontend needs
+        configuration.setExposedHeaders(List.of(
+                "Authorization",
+                "X-Request-ID",
+                "X-Total-Count",
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials",
+                "Set-Cookie"
+        ));
+
+        // Cache preflight requests for better performance
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

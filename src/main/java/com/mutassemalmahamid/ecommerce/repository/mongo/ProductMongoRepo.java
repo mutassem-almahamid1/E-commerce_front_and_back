@@ -23,4 +23,6 @@ public interface ProductMongoRepo extends MongoRepository<Product,String> {
     Page<Product> findByNameContainingIgnoreCaseAndStatus(String name, Status status, Pageable pageable);
     List<Product> findTop10ByOrderByCreatedAtDesc();
     List<Product> findTop10ByOrderByAvgRatingDesc();
+    List<Product> findTop10ByStatusOrderByCreatedAtDesc(Status status);
+    List<Product> findTop10ByStatusOrderByAvgRatingDesc(Status status);
 }

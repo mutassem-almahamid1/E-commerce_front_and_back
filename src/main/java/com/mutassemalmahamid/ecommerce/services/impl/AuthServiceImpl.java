@@ -230,4 +230,16 @@ public class AuthServiceImpl implements AuthService {
         response.setHeader(HttpHeaders.AUTHORIZATION, "");
         SecurityContextHolder.clearContext();
     }
+
+    /**
+     * Get current user details by email
+     *
+     * @param email the user's email
+     * @return UserResponse with current user details
+     */
+    @Override
+    public UserResponse getCurrentUser(String email) {
+        User user = userRepository.getByEmail(email);
+        return UserMapper.toResponse(user);
+    }
 }

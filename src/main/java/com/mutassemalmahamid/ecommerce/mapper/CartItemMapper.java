@@ -14,9 +14,7 @@ public class CartItemMapper {
         return CartItem.builder()
                 .productId(cartItemRequest.getProductId())
                 .quantity(cartItemRequest.getQuantity())
-                .unitPrice(unitPrice)
-                .totalPrice(unitPrice * cartItemRequest.getQuantity())
-                .createdAt(LocalDateTime.now())
+                .price(unitPrice)
                 .build();
     }
 
@@ -35,19 +33,14 @@ public class CartItemMapper {
         return CartItemResponse.builder()
                 .productId(cartItem.getProductId())
                 .quantity(cartItem.getQuantity())
-                .unitPrice(cartItem.getUnitPrice())
+                .unitPrice(cartItem.getPrice())
                 .totalPrice(cartItem.getTotalPrice())
-                .createdAt(cartItem.getCreatedAt())
-                .updatedAt(cartItem.getUpdatedAt())
-                .deletedAt(cartItem.getDeletedAt())
                 .build();
     }
 
-
-    public static void updateEntity(CartItem cartItem, CartItemRequest cartItemRequest, double unitPrice) {
+    public static void updateEntity(CartItem cartItem, CartItemRequest cartItemRequest, double price) {
         cartItem.setQuantity(cartItemRequest.getQuantity());
-        cartItem.setUnitPrice(unitPrice);
-        cartItem.setTotalPrice(unitPrice * cartItem.getQuantity());
-        cartItem.setUpdatedAt(LocalDateTime.now());
+        cartItem.setPrice(price);
     }
+
 }

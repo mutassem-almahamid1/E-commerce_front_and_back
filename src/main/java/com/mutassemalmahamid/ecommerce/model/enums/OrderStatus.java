@@ -5,5 +5,7 @@ public enum OrderStatus {
     PROCESSING,  // قيد التجهيز
     SHIPPED,     // تم الشحن
     DELIVERED,   // تم التوصيل
-    CANCELLED
+    CANCELLED,
+    RETURNED,
+    CONFIRMED
 }

@@ -22,6 +22,8 @@ public interface UserRepo {
 
     Optional<User> getByEmailIgnoreStatus(String email);
 
+    Optional<User> findByEmailOrUsername(String email, String username);
+
     Page<User> getAll(Pageable pageable);
 
     Page<User> getAllActive(Pageable pageable);

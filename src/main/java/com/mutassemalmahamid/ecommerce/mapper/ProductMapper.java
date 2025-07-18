@@ -4,6 +4,7 @@ import com.mutassemalmahamid.ecommerce.mapper.helper.AssistantHelper;
 import com.mutassemalmahamid.ecommerce.model.document.Product;
 import com.mutassemalmahamid.ecommerce.model.dto.request.ProductReq;
 import com.mutassemalmahamid.ecommerce.model.dto.response.ProductResponse;
+import com.mutassemalmahamid.ecommerce.model.enums.ItemStatus;
 import com.mutassemalmahamid.ecommerce.model.enums.Status;
 
 import java.time.LocalDateTime;
@@ -23,12 +24,14 @@ public class ProductMapper {
                 .avgRating(0.0)
                 .reviewCount(0)
                 .status(Status.ACTIVE)
+                .itemStatus(ItemStatus.IN_STOCK)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
     public static ProductResponse toResponse(Product product) {
         return ProductResponse.builder()
+                .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .brand(product.getBrand())
@@ -40,6 +43,28 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .categoryId(product.getCategoryId())
                 .status(product.getStatus())
+                .itemStatus(product.getItemStatus())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .deletedAt(product.getDeletedAt())
+                .build();
+    }
+
+    public static ProductResponse toResponse(Product product, double avgRating, int reviewCount) {
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .brand(product.getBrand())
+                .quantity(product.getStockQuantity())
+                .images(product.getImages())
+                .technicalSpecs(product.getTechnicalSpecs())
+                .avgRating(avgRating)
+                .reviewCount(reviewCount)
+                .price(product.getPrice())
+                .categoryId(product.getCategoryId())
+                .status(product.getStatus())
+                .itemStatus(product.getItemStatus())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .deletedAt(product.getDeletedAt())

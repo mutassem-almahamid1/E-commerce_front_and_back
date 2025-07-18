@@ -1,5 +1,6 @@
 package com.mutassemalmahamid.ecommerce.model.dto.response;
 
+import com.mutassemalmahamid.ecommerce.model.enums.ItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

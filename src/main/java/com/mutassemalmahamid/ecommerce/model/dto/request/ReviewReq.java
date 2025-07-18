@@ -19,6 +19,9 @@ public class ReviewReq {
     @NotBlank(message = "Product ID is required")
     private String productId;
 
+    @NotBlank(message = "User ID is required")
+    private String userId;
+
     @NotNull(message = "Rating is required")
     @Min(message = "Rating must be between 1 and 5", value = 1)
     @Max(message = "Rating must be between 1 and 5", value = 5)

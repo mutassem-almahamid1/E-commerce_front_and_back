@@ -1,5 +1,6 @@
 package com.mutassemalmahamid.ecommerce.model.document;
 
+import com.mutassemalmahamid.ecommerce.model.enums.ItemStatus;
 import com.mutassemalmahamid.ecommerce.model.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +36,7 @@ public class Product {
     private int reviewCount;
 
     private Status status = Status.ACTIVE;
-
+    private ItemStatus itemStatus = ItemStatus.IN_STOCK;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;

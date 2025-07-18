@@ -73,5 +73,11 @@ public class BrandController {
         Page<BrandResponse> response = brandService.getAllActive(pageable);
         return ResponseEntity.ok(response);
     }
-}
 
+    @GetMapping("/simple")
+    public ResponseEntity<List<BrandResponse>> getAllActiveSimple() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<BrandResponse> page = brandService.getAllActive(pageable);
+        return ResponseEntity.ok(page.getContent());
+    }
+}

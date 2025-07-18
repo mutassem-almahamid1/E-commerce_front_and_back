@@ -1,5 +1,6 @@
 package com.mutassemalmahamid.ecommerce.repository.impl;
 
+import com.mutassemalmahamid.ecommerce.handelException.exception.NotFoundException;
 import com.mutassemalmahamid.ecommerce.model.document.Review;
 import com.mutassemalmahamid.ecommerce.model.enums.Status;
 import com.mutassemalmahamid.ecommerce.repository.ReviewRepo;
@@ -36,7 +37,7 @@ public class ReviewRepoImp implements ReviewRepo {
     @Override
     public Review getByIdIgnoreStatus(String id) {
         return reviewMongoRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
+            .orElseThrow(() -> new NotFoundException("Review not found with id: " + id));
     }
 
     @Override
@@ -77,5 +78,11 @@ public class ReviewRepoImp implements ReviewRepo {
     @Override
     public void delete(Review review) {
         reviewMongoRepo.delete(review);
+    }
+
+    @Override
+    public Review getById(String id) {
+        return reviewMongoRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Review not found with id: " + id));
     }
 }

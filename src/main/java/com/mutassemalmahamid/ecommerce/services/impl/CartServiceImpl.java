@@ -1,84 +1,59 @@
 package com.mutassemalmahamid.ecommerce.services.impl;
 
-import com.mutassemalmahamid.ecommerce.handelException.exception.NotFoundException;
-import com.mutassemalmahamid.ecommerce.mapper.CartItemMapper;
-import com.mutassemalmahamid.ecommerce.mapper.CartMapper;
 import com.mutassemalmahamid.ecommerce.model.document.Cart;
-import com.mutassemalmahamid.ecommerce.model.dto.request.CartItemRequest;
-import com.mutassemalmahamid.ecommerce.model.dto.request.CartRequest;
-import com.mutassemalmahamid.ecommerce.model.dto.response.CartResponse;
-import com.mutassemalmahamid.ecommerce.model.common.MessageResponse;
-import com.mutassemalmahamid.ecommerce.repository.CartRepo;
+import com.mutassemalmahamid.ecommerce.model.document.CartItem;
+import com.mutassemalmahamid.ecommerce.repository.CartRepository;
 import com.mutassemalmahamid.ecommerce.services.CartService;
-import com.mutassemalmahamid.ecommerce.mapper.helper.AssistantHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Service
 public class CartServiceImpl implements CartService {
+    private final CartRepository cartRepository;
 
-    private final CartRepo cartRepo;
-
-    public CartServiceImpl(CartRepo cartRepo) {
-        this.cartRepo = cartRepo;
-    }
-
-    private List<Double> fetchUnitPrices(List<CartItemRequest> cartItemRequests) {
-        return cartItemRequests.stream().map(req -> 1.0).collect(Collectors.toList());
+    @Autowired
+    public CartServiceImpl(CartRepository cartRepository) {
+        this.cartRepository = cartRepository;
     }
 
     @Override
-    public CartResponse create(String userId, CartRequest request) {
-        List<Double> unitPrices = fetchUnitPrices(request.getCartItems());
-        Cart cart = CartMapper.toEntity(userId, CartItemMapper.toEntityList(request.getCartItems(), unitPrices));
-        Cart saved = cartRepo.save(cart);
-        return CartMapper.toResponse(saved);
+    public Cart getCartByUserId(String userId) {
+        return cartRepository.findFirstByUserIdOrderByCreatedAtDesc(userId).orElseGet(() -> {
+            Cart cart = Cart.builder().userId(userId).cartItems(new ArrayList<>()).build();
+            return cartRepository.save(cart);
+        });
     }
 
     @Override
-    public CartResponse getById(String id) {
-        Cart cart = cartRepo.getByIdIfPresent(id)
-                .orElseThrow(() -> new NotFoundException("Cart not found"));
-        return CartMapper.toResponse(cart);
+    public Cart addOrUpdateItem(String userId, CartItem item) {
+        Cart cart = getCartByUserId(userId);
+        boolean found = false;
+        for (CartItem ci : cart.getCartItems()) {
+            if (ci.getProductId().equals(item.getProductId())) {
+                ci.setQuantity(ci.getQuantity() + item.getQuantity());
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            cart.getCartItems().add(item);
+        }
+        return cartRepository.save(cart);
     }
 
     @Override
-    public CartResponse getByUserId(String userId) {
-        Cart cart = cartRepo.getByUserIdIfPresent(userId)
-                .orElseThrow(() -> new NotFoundException("Cart not found"));
-        return CartMapper.toResponse(cart);
+    public Cart removeItem(String userId, String productId) {
+        Cart cart = getCartByUserId(userId);
+        cart.getCartItems().removeIf(ci -> ci.getProductId().equals(productId));
+        return cartRepository.save(cart);
     }
 
     @Override
-    public CartResponse update(String userId, CartRequest request) {
-        Cart cart = cartRepo.getByUserIdIfPresent(userId)
-                .orElseThrow(() -> new NotFoundException("Cart not found"));
-        List<Double> unitPrices = fetchUnitPrices(request.getCartItems());
-        CartMapper.updateEntity(cart, CartItemMapper.toEntityList(request.getCartItems(), unitPrices));
-        Cart updated = cartRepo.save(cart);
-        return CartMapper.toResponse(updated);
-    }
-
-    @Override
-    public MessageResponse deleteById(String id) {
-        cartRepo.deleteById(id);
-        return AssistantHelper.toMessageResponse("Cart deleted.");
-    }
-
-    @Override
-    public MessageResponse deleteByUserId(String userId) {
-        Cart cart = cartRepo.getByUserIdIfPresent(userId)
-                .orElseThrow(() -> new NotFoundException("Cart not found"));
-        cartRepo.delete(cart);
-        return AssistantHelper.toMessageResponse("Cart deleted.");
-    }
-
-    @Override
-    public List<CartResponse> getAll() {
-        return cartRepo.getAll().stream()
-                .map(CartMapper::toResponse)
-                .collect(Collectors.toList());
+    public void clearCart(String userId) {
+        Cart cart = getCartByUserId(userId);
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
     }
 }

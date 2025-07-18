@@ -24,20 +24,30 @@ public class Order {
     @Id
     private String id;
     private String userId;
+    private String orderNumber; // رقم الطلب الفريد
 
     private Address shippingAddress;
+    private Address billingAddress; // عنوان الفوترة
 
     private double totalAmount;
+    private double shippingCost; // تكلفة الشحن
+    private double taxAmount; // ضريبة
+    private double discountAmount; // خصم
+    private double finalAmount; // المبلغ النهائي
 
     private List<OrderItem> items;
 
     private PaymentMethod paymentMethod;
-
-    private LocalDateTime orderDate;
+    private String paymentId; // معرف الدفع من الخدمة الخارجية
+    private boolean isPaid; // حالة الدفع
 
     private OrderStatus status = PENDING;
+    private String notes; // ملاحظات على الطلب
+    private String trackingNumber; // رقم التتبع
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+    private LocalDateTime shippedAt; // تاريخ الشحن
+    private LocalDateTime deliveredAt; // تاريخ التسليم
 }

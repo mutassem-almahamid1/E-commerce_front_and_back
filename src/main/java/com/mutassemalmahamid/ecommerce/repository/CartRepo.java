@@ -7,16 +7,10 @@ import java.util.Optional;
 
 public interface CartRepo {
     Cart save(Cart cart);
-
     List<Cart> saveAll(List<Cart> carts);
-
     Optional<Cart> getByIdIfPresent(String id);
-
-    Optional<Cart> getByUserIdIfPresent(String userId);
-
+    Optional<Cart> findByUserId(String userId);
     List<Cart> getAll();
-
     void deleteById(String cartId);
-
     void delete(Cart cart);
 }

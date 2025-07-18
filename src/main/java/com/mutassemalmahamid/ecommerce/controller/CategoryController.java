@@ -71,5 +71,10 @@ public class CategoryController {
         List<CategoryResponse> response = categoryService.getAllActive();
         return ResponseEntity.ok(response);
     }
-}
 
+    @GetMapping("/simple")
+    public ResponseEntity<List<CategoryResponse>> getAllActiveSimple() {
+        List<CategoryResponse> response = categoryService.getAllActive();
+        return ResponseEntity.ok(response);
+    }
+}

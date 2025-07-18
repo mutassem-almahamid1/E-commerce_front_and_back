@@ -23,11 +23,13 @@ public class BrandMapper {
 
     public static BrandResponse toResponse(Brand brand) {
         return BrandResponse.builder()
+                .id(brand.getId())
                 .name(brand.getName())
                 .description(brand.getDescription())
                 .logoUrl(brand.getLogoUrl())
                 .websiteUrl(brand.getWebsiteUrl())
                 .status(brand.getStatus().name())
+                .createdAt(brand.getCreatedAt())
                 .build();
     }
 

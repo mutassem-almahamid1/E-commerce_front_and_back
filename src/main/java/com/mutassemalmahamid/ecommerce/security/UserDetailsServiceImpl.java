@@ -28,7 +28,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
         // Try to find user by username or email
-        User user = userRepository.getByEmail(usernameOrEmail);
+        User user = userRepository.findByEmailOrUsername(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email or username: " + usernameOrEmail));
 
         if (user.getStatus() == Status.BLOCKED) {
             throw new BadCredentialsException("Your account is blocked. Connect with support.");

@@ -27,6 +27,8 @@ public interface UserMongRepo extends MongoRepository<User,String> {
 
     Optional<User> findByUsernameAndStatus(String username, Status status);
 
+    Optional<User> findByEmailOrUsername(String email, String username);
+
     List<User> findAllByStatusNot(Status status);
 
     Page<User> findAllByStatusNot(Status status, Pageable pageable);

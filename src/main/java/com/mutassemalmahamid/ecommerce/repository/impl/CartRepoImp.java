@@ -33,8 +33,9 @@ public class CartRepoImp implements CartRepo {
     }
 
     @Override
-    public Optional<Cart> getByUserIdIfPresent(String userId) {
-        return cartMongoRepo.findByUserId(userId);
+    public Optional<Cart> findByUserId(String userId) {
+        // Use the method that gets the most recent cart to avoid "non unique result" error
+        return cartMongoRepo.findFirstByUserIdOrderByCreatedAtDesc(userId);
     }
 
     @Override

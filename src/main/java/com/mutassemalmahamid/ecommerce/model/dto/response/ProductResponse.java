@@ -1,5 +1,6 @@
 package com.mutassemalmahamid.ecommerce.model.dto.response;
 
+import com.mutassemalmahamid.ecommerce.model.enums.ItemStatus;
 import com.mutassemalmahamid.ecommerce.model.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,7 @@ public class ProductResponse {
     private int reviewCount;
 
     private Status status;
+    private ItemStatus itemStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;

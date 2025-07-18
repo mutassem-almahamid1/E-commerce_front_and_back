@@ -30,4 +30,6 @@ public interface ReviewRepo {
     void deleteById(String id);
 
     void delete(Review review);
+
+    Review getById(String id);
 }

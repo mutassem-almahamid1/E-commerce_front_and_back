@@ -16,6 +16,8 @@ public class ReviewResponse {
     private String id;
     private String productId;
     private String userId;
+    private String username; // اسم المستخدم
+    private String userImage; // صورة المستخدم
     private String comment;
     private int rating;
 

@@ -24,4 +24,12 @@ public interface AuthService {
 
     @Transactional
     void logoutUser(String email, @NotNull HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * Get current user details by email
+     *
+     * @param email the user's email
+     * @return UserResponse with current user details
+     */
+    UserResponse getCurrentUser(String email);
 }

@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Document
 public class Cart {
     @Id
@@ -21,8 +21,8 @@ public class Cart {
     private String userId;
     private List<CartItem> cartItems;
     private double totalAmount;
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 }
+

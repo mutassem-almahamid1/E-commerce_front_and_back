@@ -10,6 +10,8 @@ import com.mutassemalmahamid.ecommerce.model.common.MessageResponse;
 import com.mutassemalmahamid.ecommerce.repository.ProductRepo;
 import com.mutassemalmahamid.ecommerce.services.ProductService;
 import com.mutassemalmahamid.ecommerce.mapper.helper.AssistantHelper;
+import com.mutassemalmahamid.ecommerce.repository.ReviewRepo;
+import com.mutassemalmahamid.ecommerce.model.document.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,9 +24,11 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepo productRepo;
+    private final ReviewRepo reviewRepo;
 
-    public ProductServiceImpl(ProductRepo productRepo) {
+    public ProductServiceImpl(ProductRepo productRepo, ReviewRepo reviewRepo) {
         this.productRepo = productRepo;
+        this.reviewRepo = reviewRepo;
     }
 
     @Override
@@ -79,36 +83,85 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductResponse> getAll(Pageable pageable) {
-        return productRepo.getAll(pageable).map(ProductMapper::toResponse);
+        return productRepo.getAll(pageable).map(product -> {
+            double avgRating = 0.0;
+            int reviewCount = 0;
+            var reviews = reviewRepo.getAllByProductId(product.getId());
+            if (reviews != null && !reviews.isEmpty()) {
+                reviewCount = reviews.size();
+                avgRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+            }
+            return ProductMapper.toResponse(product, avgRating, reviewCount);
+        });
     }
 
     @Override
     public Page<ProductResponse> getByCategory(String categoryId, Pageable pageable) {
-        return productRepo.getAllByCategoryId(categoryId, pageable).map(ProductMapper::toResponse);
+        return productRepo.getAllByCategoryId(categoryId, pageable).map(product -> {
+            double avgRating = 0.0;
+            int reviewCount = 0;
+            var reviews = reviewRepo.getAllByProductId(product.getId());
+            if (reviews != null && !reviews.isEmpty()) {
+                reviewCount = reviews.size();
+                avgRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+            }
+            return ProductMapper.toResponse(product, avgRating, reviewCount);
+        });
     }
 
     @Override
     public Page<ProductResponse> getByBrand(String brand, Pageable pageable) {
-        return productRepo.getAllByBrand(brand, pageable).map(ProductMapper::toResponse);
+        return productRepo.getAllByBrand(brand, pageable).map(product -> {
+            double avgRating = 0.0;
+            int reviewCount = 0;
+            var reviews = reviewRepo.getAllByProductId(product.getId());
+            if (reviews != null && !reviews.isEmpty()) {
+                reviewCount = reviews.size();
+                avgRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+            }
+            return ProductMapper.toResponse(product, avgRating, reviewCount);
+        });
     }
 
     @Override
     public Page<ProductResponse> searchByName(String name, Pageable pageable) {
-        return productRepo.searchByName(name, pageable).map(ProductMapper::toResponse);
+        return productRepo.searchByName(name, pageable).map(product -> {
+            double avgRating = 0.0;
+            int reviewCount = 0;
+            var reviews = reviewRepo.getAllByProductId(product.getId());
+            if (reviews != null && !reviews.isEmpty()) {
+                reviewCount = reviews.size();
+                avgRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+            }
+            return ProductMapper.toResponse(product, avgRating, reviewCount);
+        });
     }
 
     @Override
     public List<ProductResponse> getNewestProducts() {
-        return productRepo.getNewestProducts().stream()
-                .map(ProductMapper::toResponse)
-                .collect(Collectors.toList());
+        return productRepo.getNewestProducts().stream().map(product -> {
+            double avgRating = 0.0;
+            int reviewCount = 0;
+            var reviews = reviewRepo.getAllByProductId(product.getId());
+            if (reviews != null && !reviews.isEmpty()) {
+                reviewCount = reviews.size();
+                avgRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+            }
+            return ProductMapper.toResponse(product, avgRating, reviewCount);
+        }).collect(Collectors.toList());
     }
 
     @Override
     public List<ProductResponse> getTopRatedProducts() {
-        return productRepo.getTopRatedProducts().stream()
-                .map(ProductMapper::toResponse)
-                .collect(Collectors.toList());
+        return productRepo.getTopRatedProducts().stream().map(product -> {
+            double avgRating = 0.0;
+            int reviewCount = 0;
+            var reviews = reviewRepo.getAllByProductId(product.getId());
+            if (reviews != null && !reviews.isEmpty()) {
+                reviewCount = reviews.size();
+                avgRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+            }
+            return ProductMapper.toResponse(product, avgRating, reviewCount);
+        }).collect(Collectors.toList());
     }
 }
-

@@ -8,6 +8,7 @@ import com.mutassemalmahamid.ecommerce.model.dto.request.UserSignUpRequest;
 import com.mutassemalmahamid.ecommerce.model.dto.response.JwtResponse;
 import com.mutassemalmahamid.ecommerce.model.dto.response.UserResponse;
 import com.mutassemalmahamid.ecommerce.services.AuthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -66,6 +67,41 @@ public class AuthController {
     }
 
     /**
+     * Refresh token (alternative endpoint for frontend)
+     *
+     * @return response entity with JWT response
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refreshTokenSimple(HttpServletRequest request, HttpServletResponse response) {
+        // Extract refresh token from cookies
+        String refreshToken = extractRefreshTokenFromCookies(request);
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        TokenRefreshRequest refreshRequest = new TokenRefreshRequest();
+        refreshRequest.setRefreshToken(refreshToken);
+
+        JwtResponse jwtResponse = authService.refreshToken(refreshRequest);
+
+        // Add new tokens to cookies
+        authService.addTokenToHeader(response, jwtResponse.getToken(), jwtResponse.getRefreshToken());
+
+        return ResponseEntity.ok(jwtResponse);
+    }
+
+    private String extractRefreshTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Logout user
      *
      * @return response entity with success message
@@ -76,6 +112,25 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         authService.logoutUser(userDetails.getUsername(), request, response);
         return ResponseEntity.ok(AssistantHelper.toMessageResponse("User logged out successfully"));
+    }
+
+    /**
+     * Get current authenticated user
+     *
+     * @return response entity with current user details
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() ||
+            authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(401).build();
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        UserResponse currentUser = authService.getCurrentUser(userDetails.getUsername());
+        return ResponseEntity.ok(currentUser);
     }
 
 }

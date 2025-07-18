@@ -47,6 +47,11 @@ public class UserRepoImp implements UserRepo {
     }
 
     @Override
+    public Optional<User> findByEmailOrUsername(String email, String username) {
+        return userMongRepo.findByEmailOrUsername(email, username);
+    }
+
+    @Override
     public Page<User> getAllActive(Pageable pageable) {
         return userMongRepo.findAllByStatus(Status.ACTIVE, pageable);
     }
@@ -74,13 +79,13 @@ public class UserRepoImp implements UserRepo {
     @Override
     public User getByIdAndStatusNot(String id, Status status) {
         return userMongRepo.findByIdAndStatusNot(id, status)
-                .orElseThrow(() -> new RuntimeException("User not found or is deleted with id: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found or is deleted with id: " + id));
     }
 
     @Override
     public User getByUsername(String username) {
         return userMongRepo.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
     }
 
     @Override
@@ -91,13 +96,13 @@ public class UserRepoImp implements UserRepo {
     @Override
     public User getById(String id) {
         return userMongRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 
     @Override
     public User getByEmail(String email) {
         return userMongRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+                .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
     }
 
     @Override
